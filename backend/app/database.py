@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import os
 
 # Строка подключения к базе данных PostgreSQL
-DATABASE_URL = "postgresql://FastAPI_user:Plotar1404@db/FastAPI"
+DATABASE_URL = "postgresql://FastAPI_user:Plotar1404@db/FastAPI" #Не доконца понимаю работу данной бд и как в ней все устроено
 
 # Создаем синхронный движок
 engine = create_engine(DATABASE_URL, echo=True)

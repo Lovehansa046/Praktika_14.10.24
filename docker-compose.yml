@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
     networks:
-      - app-network
+      - app-network #не понимал для чего данный парамметр
 
   frontend:
     build: ./frontend  # Путь до Dockerfile с React
@@ -35,3 +35,6 @@ volumes:
 
 networks:
   app-network:
+
+
+# И в принципе не совсем понимаю как этот файл завязан на всем этом проектe
