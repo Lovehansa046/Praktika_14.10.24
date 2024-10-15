@@ -68,7 +68,7 @@ async def upload_file(file: UploadFile = File(...)):
         print(e)
         return {"status": "error", "message": str(e)}
     
-
+  
 @app.get("/files")
 async def list_files():
     try:
