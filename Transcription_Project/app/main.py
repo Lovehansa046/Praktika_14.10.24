@@ -1,11 +1,16 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, Depends, HTTPException
 from minio import Minio
 import os
 import io  # Импортируем модуль io
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from database import get_db, DBFiles
+from sqlalchemy.orm import Session
+
 
 app = FastAPI()
+
+
 
 # # Настройка MinIO
 
@@ -89,31 +94,23 @@ def get_minio_connector():
 
  
 
-# Настройка PostgreSQL
-def get_db_connection():
-    connection = psycopg2.connect(
-        dbname="Transcription",        # замените на ваше имя базы данных
-        user="Minio",         # замените на ваше имя пользователя
-        password="12345678",     # замените на ваш пароль
-        host="localhost",             # замените на ваш хост, если нужно
-        port="5432"                   # замените на ваш порт, если нужно
-    )
-    return connection
-
+# Эндпоинт для загрузки файла и записи в БД
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = DBFiles(...), db: Session = Depends(get_db)):
     try:
-        # Получаем MinIO клиент и имя бакета
+        # Подключаемся к MinIO
         minio_client, bucket_name = get_minio_connector()
 
         # Читаем содержимое файла
         file_data = await file.read()
         file_size = len(file_data)
+        title = file.filename  # Название файла
+        duration = None  # Определите длительность, если это необходимо
 
         # Создаем поток из прочитанных данных
         file_stream = io.BytesIO(file_data)
 
-        # Сохранение файла в MinIO
+        # Сохраняем файл в MinIO
         minio_client.put_object(
             bucket_name,
             file.filename,
@@ -121,34 +118,31 @@ async def upload_file(file: UploadFile = File(...)):
             length=file_size
         )
 
-        # Записываем информацию о файле в базу данных
-        connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute(
-            "INSERT INTO files (title, size, path) VALUES (%s, %s, %s)",
-            (file.filename, file_size, f"{bucket_name}/{file.filename}")
+        # Добавляем информацию о файле в базу данных
+        new_file = DBFiles(
+            title=title,
+            duration=duration,
+            size=file_size,
+            # path=f"{bucket_name}/{file.filename}"  # Путь к файлу в MinIO
         )
-        connection.commit()
-        cursor.close()
-        connection.close()
+        db.add(new_file)
+        db.commit()
+        db.refresh(new_file)
 
-        return {"status": "File uploaded", "file_name": file.filename}
+        return {"status": "File uploaded", "file_name": title, "path": new_file.path}
 
     except Exception as e:
         print(e)
         return {"status": "error", "message": str(e)}
-
+    
+# Эндпоинт для получения списка файлов
 @app.get("/files")
-async def list_files():
+async def list_files(db: Session = Depends(get_db)):
     try:
-        # Получаем MinIO клиент и имя бакета
-        minio_client, bucket_name = get_minio_connector()
+        # Получаем все записи файлов из базы данных
+        files = db.query(DBFiles).all()
 
-        # Получаем список объектов в бакете
-        objects = minio_client.list_objects(bucket_name)
-        files = [obj.object_name for obj in objects]
-
-        return {"status": "success", "files": files}
+        return {"status": "success", "files": [file.title for file in files]}
 
     except Exception as e:
         print(e)
