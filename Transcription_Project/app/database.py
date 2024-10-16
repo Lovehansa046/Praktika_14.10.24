@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, TIMESTAMP
-from datetime import datetime
+# from datetime import datetime
 
 # Строка подключения к базе данных PostgreSQL
 DATABASE_URL = "postgresql://postgres:Plotar1404@postgres_db/Transcription"
