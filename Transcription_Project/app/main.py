@@ -2,11 +2,12 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from minio import Minio
 import os
 import io  # Импортируем модуль io
-
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 app = FastAPI()
 
-# Настройка MinIO
+# # Настройка MinIO
 
 def get_minio_connector():
     minio_client = Minio(
@@ -22,24 +23,82 @@ def get_minio_connector():
     
     return minio_client, bucket_name
 
-# Эндпоинт для загрузки файла
+# # Эндпоинт для загрузки файла
+# # @app.post("/upload")
+# # async def upload_file(file: UploadFile = File(...)):
+# #     try:
+# #         # Получаем данные файла
+# #         file_data = await file.read()
+        
+# #         # Получаем MinIO клиент и имя бакета
+# #         minio_client, bucket_name = get_minio_connector()
+        
+# #         # Сохранение файла в MinIO
+# #         minio_client.put_object(bucket_name, file.filename, file_data, length=len(file_data))
+
+# #         return {"status": "File uploaded", "file_name": file.filename}
+    
+# #     except Exception as e:
+# #         print(e)
+# #         return str(e)
+
 # @app.post("/upload")
 # async def upload_file(file: UploadFile = File(...)):
 #     try:
-#         # Получаем данные файла
-#         file_data = await file.read()
-        
 #         # Получаем MinIO клиент и имя бакета
 #         minio_client, bucket_name = get_minio_connector()
-        
+
+#         # Читаем содержимое файла
+#         file_data = await file.read()  # Читаем данные файла
+#         file_size = len(file_data)  # Получаем размер файла
+
+#         # Создаем поток из прочитанных данных
+#         file_stream = io.BytesIO(file_data)
+
 #         # Сохранение файла в MinIO
-#         minio_client.put_object(bucket_name, file.filename, file_data, length=len(file_data))
+#         minio_client.put_object(
+#             bucket_name,
+#             file.filename,
+#             data=file_stream,  # Передаем поток
+#             length=file_size  # Указываем размер файла
+#         )
 
 #         return {"status": "File uploaded", "file_name": file.filename}
-    
+
 #     except Exception as e:
 #         print(e)
-#         return str(e)
+#         return {"status": "error", "message": str(e)}
+    
+
+# @app.get("/files")
+# async def list_files():
+#     try:
+#         # Получаем MinIO клиент и имя бакета
+#         minio_client, bucket_name = get_minio_connector()
+
+#         # Получаем список объектов в бакете
+#         objects = minio_client.list_objects(bucket_name)
+#         files = [obj.object_name for obj in objects]  # Список имен файлов
+
+#         return {"status": "success", "files": files}
+
+#     except Exception as e:
+#         print(e)
+#         return {"status": "error", "message": str(e)}
+
+
+ 
+
+# Настройка PostgreSQL
+def get_db_connection():
+    connection = psycopg2.connect(
+        dbname="Transcription",        # замените на ваше имя базы данных
+        user="Minio",         # замените на ваше имя пользователя
+        password="12345678",     # замените на ваш пароль
+        host="localhost",             # замените на ваш хост, если нужно
+        port="5432"                   # замените на ваш порт, если нужно
+    )
+    return connection
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -48,8 +107,8 @@ async def upload_file(file: UploadFile = File(...)):
         minio_client, bucket_name = get_minio_connector()
 
         # Читаем содержимое файла
-        file_data = await file.read()  # Читаем данные файла
-        file_size = len(file_data)  # Получаем размер файла
+        file_data = await file.read()
+        file_size = len(file_data)
 
         # Создаем поток из прочитанных данных
         file_stream = io.BytesIO(file_data)
@@ -58,17 +117,27 @@ async def upload_file(file: UploadFile = File(...)):
         minio_client.put_object(
             bucket_name,
             file.filename,
-            data=file_stream,  # Передаем поток
-            length=file_size  # Указываем размер файла
+            data=file_stream,
+            length=file_size
         )
+
+        # Записываем информацию о файле в базу данных
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO files (title, size, path) VALUES (%s, %s, %s)",
+            (file.filename, file_size, f"{bucket_name}/{file.filename}")
+        )
+        connection.commit()
+        cursor.close()
+        connection.close()
 
         return {"status": "File uploaded", "file_name": file.filename}
 
     except Exception as e:
         print(e)
         return {"status": "error", "message": str(e)}
-    
-  
+
 @app.get("/files")
 async def list_files():
     try:
@@ -77,7 +146,7 @@ async def list_files():
 
         # Получаем список объектов в бакете
         objects = minio_client.list_objects(bucket_name)
-        files = [obj.object_name for obj in objects]  # Список имен файлов
+        files = [obj.object_name for obj in objects]
 
         return {"status": "success", "files": files}
 
