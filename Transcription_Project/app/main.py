@@ -1,5 +1,4 @@
-
-from fastapi import FastAPI, UploadFile, File, Depends
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db, DBFiles  # Make sure to import your database utility functions
 from minio import Minio
@@ -66,17 +65,51 @@ async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db
         return {"status": "error", "message": str(e)}
 
 @app.get("/files")
-async def list_files():
+def get_all_files(db: Session = Depends(get_db)):
     try:
-        # Получаем MinIO клиент и имя бакета
-        minio_client, bucket_name = get_minio_connector()
+        # Получаем все записи из базы данных
+        files = db.query(DBFiles).all()
 
-        # Получаем список объектов в бакете
-        objects = minio_client.list_objects(bucket_name)
-        files = [obj.object_name for obj in objects]
+        # Преобразуем записи в список словарей
+        file_list = []
+        for file in files:
+            file_list.append({
+                "id": file.id,
+                "title": file.title,
+                "duration": file.duration,
+                "created_at": file.created_at,
+                "size": file.size,
+                "path": file.path
+            })
 
-        return {"status": "success", "files": files}
+        return {"status": "success", "files": file_list}
 
     except Exception as e:
         print(e)
         return {"status": "error", "message": str(e)}
+    
+
+@app.delete("/delete/{file_id}")
+async def delete_file(file_id: int, db: Session = Depends(get_db)):
+    # Получаем файл из базы данных по ID
+    db_file = db.query(DBFiles).filter(DBFiles.id == file_id).first()
+    
+    if not db_file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    try:
+        # Получаем MinIO клиент и имя бакета
+        minio_client, bucket_name = get_minio_connector()
+
+        # Удаляем файл из MinIO
+        minio_client.remove_object(bucket_name, db_file.title)
+
+        # Удаляем запись из базы данных
+        db.delete(db_file)
+        db.commit()
+
+        return {"status": "File deleted", "file_id": file_id}
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=str(e))
