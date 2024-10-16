@@ -1,32 +1,26 @@
-from fastapi import FastAPI, UploadFile, Depends, HTTPException
-from minio import Minio
-import os
-import io  # Импортируем модуль io
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from database import get_db, DBFiles
-from sqlalchemy.orm import Session
+# from fastapi import FastAPI, UploadFile, File, HTTPException
+# from minio import Minio
+# import os
+# import io  # Импортируем модуль io
 
 
-app = FastAPI()
-
-
+# app = FastAPI()
 
 # # Настройка MinIO
 
-def get_minio_connector():
-    minio_client = Minio(
-        "minio:9000",
-        access_key="Root123",
-        secret_key="Root123312213n",
-        secure=False
-    )
+# def get_minio_connector():
+#     minio_client = Minio(
+#         "minio:9000",
+#         access_key="Root123",
+#         secret_key="Root123312213n",
+#         secure=False
+#     )
 
-    bucket_name = "mybucket"
-    if not minio_client.bucket_exists(bucket_name):
-        minio_client.make_bucket(bucket_name)
+#     bucket_name = "mybucket"
+#     if not minio_client.bucket_exists(bucket_name):
+#         minio_client.make_bucket(bucket_name)
     
-    return minio_client, bucket_name
+#     return minio_client, bucket_name
 
 # # Эндпоинт для загрузки файла
 # # @app.post("/upload")
@@ -92,25 +86,47 @@ def get_minio_connector():
 #         return {"status": "error", "message": str(e)}
 
 
- 
+from fastapi import FastAPI, UploadFile, File, Depends
+from sqlalchemy.orm import Session
+from database import get_db, DBFiles  # Make sure to import your database utility functions
+from minio import Minio
+import os
+import io
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-# Эндпоинт для загрузки файла и записи в БД
+app = FastAPI()
+
+# Настройка MinIO
+def get_minio_connector():
+    minio_client = Minio(
+        "minio:9000",
+        access_key="Root123",
+        secret_key="Root123312213n",
+        secure=False
+    )
+
+    bucket_name = "mybucket"
+    if not minio_client.bucket_exists(bucket_name):
+        minio_client.make_bucket(bucket_name)
+
+    return minio_client, bucket_name
+
+
 @app.post("/upload")
-async def upload_file(file: UploadFile = DBFiles(...), db: Session = Depends(get_db)):
+async def upload_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
-        # Подключаемся к MinIO
+        # Получаем MinIO клиент и имя бакета
         minio_client, bucket_name = get_minio_connector()
 
         # Читаем содержимое файла
         file_data = await file.read()
         file_size = len(file_data)
-        title = file.filename  # Название файла
-        duration = None  # Определите длительность, если это необходимо
 
         # Создаем поток из прочитанных данных
         file_stream = io.BytesIO(file_data)
 
-        # Сохраняем файл в MinIO
+        # Сохранение файла в MinIO
         minio_client.put_object(
             bucket_name,
             file.filename,
@@ -118,31 +134,35 @@ async def upload_file(file: UploadFile = DBFiles(...), db: Session = Depends(get
             length=file_size
         )
 
-        # Добавляем информацию о файле в базу данных
-        new_file = DBFiles(
-            title=title,
-            duration=duration,
+        # Создаем объект для записи в базу данных
+        db_file = DBFiles(
+            title=file.filename,
             size=file_size,
-            # path=f"{bucket_name}/{file.filename}"  # Путь к файлу в MinIO
+            path=f"{bucket_name}/{file.filename}"
         )
-        db.add(new_file)
-        db.commit()
-        db.refresh(new_file)
 
-        return {"status": "File uploaded", "file_name": title, "path": new_file.path}
+        # Записываем информацию о файле в базу данных
+        db.add(db_file)
+        db.commit()
+        db.refresh(db_file)
+
+        return {"status": "File uploaded", "file_name": file.filename}
 
     except Exception as e:
         print(e)
         return {"status": "error", "message": str(e)}
-    
-# Эндпоинт для получения списка файлов
-@app.get("/files")
-async def list_files(db: Session = Depends(get_db)):
-    try:
-        # Получаем все записи файлов из базы данных
-        files = db.query(DBFiles).all()
 
-        return {"status": "success", "files": [file.title for file in files]}
+@app.get("/files")
+async def list_files():
+    try:
+        # Получаем MinIO клиент и имя бакета
+        minio_client, bucket_name = get_minio_connector()
+
+        # Получаем список объектов в бакете
+        objects = minio_client.list_objects(bucket_name)
+        files = [obj.object_name for obj in objects]
+
+        return {"status": "success", "files": files}
 
     except Exception as e:
         print(e)

@@ -6,7 +6,7 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP
 from datetime import datetime
 
 # Строка подключения к базе данных PostgreSQL
-DATABASE_URL = "postgresql://postgres:Plotar1404@db/Transcription"
+DATABASE_URL = "postgresql://postgres:Plotar1404@postgres_db/Transcription"
 
 # Создаем синхронный движок
 engine = create_engine(DATABASE_URL, echo=True)
@@ -33,8 +33,8 @@ class DBFiles(Base):
     __tablename__ = "files"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
+    title = Column(String(255), nullable=True)
     duration = Column(Integer, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
-    size = Column(Integer, nullable=False)
-    path = Column(String(512), nullable=False)  # Путь к файлу в MinIO
+    size = Column(Integer, nullable=True)
+    path = Column(String(512), nullable=True)  # Путь к файлу в MinIO
