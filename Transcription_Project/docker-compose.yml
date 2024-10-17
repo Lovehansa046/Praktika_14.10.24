@@ -3,7 +3,7 @@ version: '3.8'
 services:
   fastapi:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: Transcription_Project
     depends_on:
@@ -43,6 +43,16 @@ services:
       - "9001:9001"
     volumes:
       - ~/minio/data:/data
+    networks:
+      - app_network
+
+  react-app:
+    build:
+      context: ./frontend  # Путь к директории с React приложением
+      dockerfile: Dockerfile  # Dockerfile для React
+#    container_name: frontend
+    ports:
+      - "3000:80"  # Порт для React
     networks:
       - app_network
 
