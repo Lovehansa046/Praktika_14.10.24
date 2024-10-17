@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-psycopg2
-minio
-sqlalchemy
-python-multipart
