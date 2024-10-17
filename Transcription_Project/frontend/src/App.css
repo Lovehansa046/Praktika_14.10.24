@@ -1,38 +1,123 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Основные стили для приложения */
+.app-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background: linear-gradient(135deg, #1b1b2f, #162447);
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+}
+
+.heading {
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #e43f5a;
+  text-shadow: 0 0 10px rgba(228, 63, 90, 0.7);
+}
+
+/* Стили для формы загрузки файлов */
+.file-upload-section {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  background-color: #e43f5a;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
   color: white;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
 }
 
-.App-link {
-  color: #61dafb;
+.file-label:hover {
+  background-color: #ff4757;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.upload-button {
+  background-color: #1f4068;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-size: 1.1em;
+  transition: transform 0.3s;
+}
+
+.upload-button:hover {
+  transform: scale(1.05);
+  background-color: #162447;
+}
+
+/* Стили для списка файлов */
+.file-list-section {
+  margin-top: 40px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+}
+
+.file-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  transition: transform 0.3s;
+}
+
+.file-list-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 30px rgba(255, 255, 255, 0.1);
+}
+
+.file-name {
+  color: #fff;
+  font-size: 1.1em;
+}
+
+.file-size {
+  color: #ccc;
+  font-size: 0.9em;
+}
+
+.delete-button {
+  background-color: #e43f5a;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #ff4757;
 }
