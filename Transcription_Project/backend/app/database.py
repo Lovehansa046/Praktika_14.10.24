@@ -30,7 +30,7 @@ def init_db():
     Base.metadata.create_all(bind=engine)
 
 class DBFiles(Base):
-    __tablename__ = "files"
+    _tablename_ = "files"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=True)
@@ -38,3 +38,6 @@ class DBFiles(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
     size = Column(Integer, nullable=True)
     path = Column(String(512), nullable=True)  # Путь к файлу в MinIO
+
+# Создаем таблицы в базе данных
+Base.metadata.create_all(bind=engine)
