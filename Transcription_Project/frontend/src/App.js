@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css'; // Импортируем стили
 
@@ -98,42 +98,35 @@ const App = () => {
     }, []);
 
     return (
-        <div className="app-container">
-            <div className="file-upload-section">
-                <h2 className="heading">Загрузка файлов</h2>
-                <div className="upload-box">
+        <div className="max-w-4xl mx-auto p-8">
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-lg font-semibold mb-4">Загрузка файлов</h2>
+                <div className="flex items-center justify-center w-full">
                     <input
                         id="file-upload"
                         type="file"
                         onChange={handleFileUpload}
-                        className="file-input"
+                        className="hidden"
                     />
-                    <label htmlFor="file-upload" className="file-label">
-                        Выберите файл
+                    <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg w-full h-32 p-4 text-center hover:border-indigo-500">
+                        <svg className="w-12 h-12 text-gray-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16v4m10-4v4m-5-4v4m6-14H5a2 2 0 00-2 2v16a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"></path></svg>
+                        <span className="text-gray-500">Нажмите для выбора файла</span>
                     </label>
-                    {/*<button className="upload-button" onClick={handleFileUpload}>*/}
-                    {/*    Загрузить*/}
-                    {/*</button>*/}
                 </div>
             </div>
 
-            <div className="file-list-section">
-                <h2 className="heading">Список файлов</h2>
-                <ul className="file-list">
+            <div className="mt-8">
+                <h2 className="text-lg font-semibold mb-4">Список файлов</h2>
+                <ul className="bg-white p-6 rounded-lg shadow-md space-y-4">
                     {files.map((file) => (
-                        <li key={file.id} className="file-list-item">
-                            <span className="file-name">{file.title}</span>
-                            <span className="file-size">{file.size} bytes</span>
-                            <button onClick={() => handleDeleteFile(file.id)} className="delete-button">
-                                Удалить
-                            </button>
+                        <li key={file.id} className="flex justify-between items-center">
+                            <span>{file.title} ({file.size} bytes)</span>
+                            <button onClick={() => handleDeleteFile(file.id)} className="bg-red-500 text-white px-4 py-2 rounded-lg">Удалить</button>
                         </li>
                     ))}
                 </ul>
             </div>
         </div>
-
-
     );
 };
 

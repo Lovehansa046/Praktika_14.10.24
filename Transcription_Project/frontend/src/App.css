@@ -1,4 +1,10 @@
 /* Основные стили для приложения */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 .app-container {
   display: flex;
   flex-direction: column;
