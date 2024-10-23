@@ -1,35 +1,26 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+FROM python:3.12-slim-bookworm
 
-# Устанавливаем рабочую директорию внутри контейнера
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+
+
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+
+
+ENV PATH="/root/.cargo/bin/:$PATH"
+
 WORKDIR /app
 
-# Копируем файлы приложения
+
 COPY ./app /app
 
-# Копируем файл зависимостей
+
 COPY ./requirements.txt /app/requirements.txt
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Команда для запуска FastAPI с помощью Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN uv venv --system
+RUN uv pip install -r requirements.txt
 
-
-
-#FROM python:3.9.2
-#
-## Устанавливаем рабочую директорию внутри контейнера
-#WORKDIR /app
-#
-## Копируем файлы приложения
-#COPY ./app /app
-#
-## Копируем файл зависимостей
-#COPY ./requirements.txt /app/requirements.txt
-#
-## Устанавливаем зависимости
-#RUN pip install --no-cache-dir -r /app/requirements.txt
-#
-## Команда для запуска FastAPI
-#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv","run","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
