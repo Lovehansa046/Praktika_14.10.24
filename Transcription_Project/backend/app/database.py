@@ -6,38 +6,39 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP
 # from datetime import datetime
 
 # Строка подключения к базе данных PostgreSQL
-DATABASE_URL = "postgresql://postgres:Plotar1404@postgres_db/Transcription"
-
-# Создаем синхронный движок
-engine = create_engine(DATABASE_URL, echo=True)
-
-# Создаем сессию для работы с базой данных
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Базовый класс для моделей
 Base = declarative_base()
 
-# Функция для получения сессии базы данных
+def get_engine():
+    DATABASE_URL = "postgresql://postgres:Plotar1404@postgres_db/Transcription"
+    engine = create_engine(DATABASE_URL, echo=True)
+    return engine
+
+def get_session():
+    init_db()
+    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+
 def get_db():
+    SessionLocal = get_session()
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
-# Функция инициализации базы данных
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=get_engine())
 
 class DBFiles(Base):
-    _tablename_ = "files"
+    """
+    Represents files stored in the database.
+    """
+    __tablename__ = "files"
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=True)
-    duration = Column(Integer, nullable=True)
-    created_at = Column(TIMESTAMP, server_default=func.now())
-    size = Column(Integer, nullable=True)
-    path = Column(String(512), nullable=True)  # Путь к файлу в MinIO
-
-# Создаем таблицы в базе данных
-Base.metadata.create_all(bind=engine)
+    id = Column(Integer, primary_key=True, index=True, comment="Unique identifier for the file")
+    title = Column(String(255), nullable=True, comment="Title or name of the file")
+    duration = Column(Integer, nullable=True, comment="Duration of the audio file in seconds")
+    created_at = Column(TIMESTAMP, server_default=func.now(), comment="Timestamp when the file was created")
+    size = Column(Integer, nullable=True, comment="Size of the file in bytes")
+    path = Column(String(512), nullable=True, comment="Path to the file in MinIO storage")
