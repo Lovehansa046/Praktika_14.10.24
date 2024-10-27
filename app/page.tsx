@@ -1,16 +1,13 @@
-// app/page.tsx
 "use client";
 
-// import { Button } from "flowbite-react";
 import Image from "next/image";
 
 export default function Home() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white">
-            {/* Логотип и заголовок */}
             <div className="flex items-center mb-6">
                 <Image
-                    src="/favicon.ico" // Путь к логотипу
+                    src="/favicon.ico"
                     alt="Логотип"
                     width={50}
                     height={50}
@@ -18,12 +15,10 @@ export default function Home() {
                 />
                 <h1 className="text-4xl font-bold text-blue-600">MyApp</h1>
             </div>
-            {/* Текст-рыба */}
             <p className="text-center text-gray-500 mb-8 max-w-md">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque nisl eros,
                 pulvinar facilisis justo mollis, auctor consequat urna.
             </p>
-            {/* Кнопки для Sign Up и Sign In */}
             <div className="space-x-4">
                 <a href="/signup">
                     <button
