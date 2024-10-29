@@ -15,6 +15,9 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body>
+        {/*<nav>*/}
+        {/*    <a href="/home">HOme</a>*/}
+        {/*</nav>*/}
         {children}
         </body>
         </html>

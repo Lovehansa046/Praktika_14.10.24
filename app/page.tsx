@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-export default function Home() {
+export default function Desktop() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white">
             <div className="flex items-center mb-6">
@@ -37,3 +37,5 @@ export default function Home() {
         </div>
     );
 }
+
+
