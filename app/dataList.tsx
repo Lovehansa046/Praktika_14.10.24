@@ -18,10 +18,13 @@ export default function DataList() {
                 <table className="w-full table-auto text-sm text-left">
                     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
                     <tr>
-                        <th className="py-3 px-6">Username</th>
-                        <th className="py-3 px-6">Email</th>
-                        <th className="py-3 px-6">Position</th>
-                        <th className="py-3 px-6">Salary</th>
+                        <th className="py-3 px-6">Name</th>
+                        <th className="py-3 px-6">Price</th>
+                        <th className="py-3 px-6">Count</th>
+                        <th className="py-3 px-6">Seller name</th>
+                        <th className="py-3 px-6">Total price</th>
+                        <th className="py-3 px-6">Quantity</th>
+
                     </tr>
                     </thead>
                     <tbody className="text-gray-600 divide-y">
