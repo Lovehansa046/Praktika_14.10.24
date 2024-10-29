@@ -172,22 +172,22 @@ export default function Navbar() {
                             }
                             <div className='flex-1 items-center justify-end gap-x-6 space-y-3 md:flex md:space-y-0'>
 
-                                <li>
-                                    {/*<a href="javascript:void(0)">*/}
-                                    {/*    <img*/}
-                                    {/*        src="https://www.floatui.com/logo.svg"*/}
-                                    {/*        width={120}*/}
-                                    {/*        height={50}*/}
-                                    {/*        alt="Float UI logo"*/}
-                                    {/*    />*/}
-                                    {/*</a>*/}
+                                {/*<li>*/}
+                                {/*    /!*<a href="javascript:void(0)">*!/*/}
+                                {/*    /!*    <img*!/*/}
+                                {/*    /!*        src="https://www.floatui.com/logo.svg"*!/*/}
+                                {/*    /!*        width={120}*!/*/}
+                                {/*    /!*        height={50}*!/*/}
+                                {/*    /!*        alt="Float UI logo"*!/*/}
+                                {/*    /!*    />*!/*/}
+                                {/*    /!*</a>*!/*/}
 
-                                    <a href="javascript:void(0)"
-                                       className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none">
+                                {/*    <a href="javascript:void(0)"*/}
+                                {/*       className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none">*/}
 
-                                        Name.username
-                                    </a>
-                                </li>
+                                {/*        Name.username*/}
+                                {/*    </a>*/}
+                                {/*</li>*/}
 
                             </div>
                         </ul>
