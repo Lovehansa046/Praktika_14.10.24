@@ -1,11 +1,11 @@
 "use client"
 import Navbar from "@/app/navbar";
-import Desktop from "@/app/page";
+import Default from "@/app/default";
 export default function Home() {
     return (
         <>
             <Navbar></Navbar>
-            <Desktop></Desktop>
+            <Default></Default>
         </>
 
     )
