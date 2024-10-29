@@ -37,8 +37,8 @@ export default function Navbar() {
 
     // Replace javascript:void(0) paths with your paths
     const navigation = [
-        {title: "Marketplace", path: "javascript:void(0)", isDrapdown: true, navs: dropdownNavs},
         {title: "Dashboard", path: "javascript:void(0)", isDrapdown: false},
+        {title: "Marketplace", path: "javascript:void(0)", isDrapdown: true, navs: dropdownNavs},
         {title: "Contracts", path: "javascript:void(0)", isDrapdown: false},
         {title: "Payments", path: "javascript:void(0)", isDrapdown: false},
         {title: "Settings", path: "javascript:void(0)", isDrapdown: false}
