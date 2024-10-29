@@ -28,6 +28,18 @@ const dropdownNavs = [
 
                 ,
             },
+            {
+                title: "Marketplace",
+                desc: "Duis aute irure dolor in reprehenderit",
+                path: "/marketplace",
+                icon: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                           className="w-6 h-6">
+                    <path
+                        d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z"/>
+                </svg>
+
+                ,
+            },
         ]
     }
 ]
@@ -65,7 +77,7 @@ export default function Navbar() {
         {title: "Marketplace", path: "javascript:void(0)", isDrapdown: true, navs: dropdownNavs},
         {title: "Contracts", path: "javascript:void(0)", isDrapdown: false},
         {title: "Payments", path: "javascript:void(0)", isDrapdown: false},
-        {title: "Settings", path: "javascript:void(0)", isDrapdown: false}
+        {title: "Settings", path: "/settings", isDrapdown: false}
     ]
 
     useEffect(() => {
@@ -81,7 +93,7 @@ export default function Navbar() {
                 className={`relative z-20 bg-white w-full md:static md:text-sm md:border-none ${state ? "shadow-lg rounded-b-xl md:shadow-none" : ""}`}>
                 <div className="items-center gap-x-14 px-4 max-w-screen-xl mx-auto md:flex md:px-8">
                     <div className="flex items-center justify-between py-3 md:py-5 md:block">
-                        <a href="javascript:void(0)">
+                        <a href="/home">
                             <img
                                 src="https://www.floatui.com/logo.svg"
                                 width={120}
@@ -161,12 +173,12 @@ export default function Navbar() {
                                             {
                                                 item.isDrapdown && drapdownState.idx == idx && drapdownState.isActive ? (
                                                     <div
-                                                        className="mt-6 inset-x-0 top-20 w-full md:absolute md:border-y md:shadow-md md:mt-0">
+                                                        className="bg-white mt-6 inset-x-0 top-20 w-full md:absolute md:border-y md:shadow-md md:mt-0">
                                                         <ul className='max-w-screen-xl mx-auto grid items-center gap-6 md:p-8 md:grid-cols-2 lg:grid-cols-3'>
                                                             {item?.navs.map((dropdownItem, idx) => (
                                                                 <li key={idx}>
                                                                     <p className="text-indigo-600 text-sm">{dropdownItem.label}</p>
-                                                                    <ul className='mt-5 space-y-6'>
+                                                                    <ul className='mt-5 space-y-6 '>
                                                                         {dropdownItem.navs.map((navItem, idx) => (
                                                                             <li key={idx} className="group">
                                                                                 <a href={navItem.path}

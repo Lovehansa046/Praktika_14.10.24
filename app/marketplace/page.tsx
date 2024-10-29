@@ -1,13 +1,14 @@
 "use client"
 import Navbar from "@/app/navbar";
+// import Default from "@/app/default";
+import DataList from "@/app/dataList";
 import Footer from "@/app/footer";
-import Default from "@/app/default";
 
 export default function Home() {
     return (
         <>
             <Navbar></Navbar>
-            <Default></Default>
+            <DataList></DataList>
             <Footer></Footer>
         </>
     )
