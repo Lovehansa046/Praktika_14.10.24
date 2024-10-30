@@ -1,4 +1,7 @@
 import {useEffect, useState} from 'react'
+import data from '../marketplace/data.json';
+import contracts from '../contracts/data.contracts.json';
+import payments from '../payments/data.payments.json';
 
 
 const dropdownNavs = [
@@ -47,7 +50,31 @@ export default function Navbar() {
 
     const [state, setState] = useState(false)
     const [drapdownState, setDrapdownState] = useState({isActive: false, idx: null})
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
+
+    const handleSearchToggle = () => {
+        setIsSearchOpen(!isSearchOpen);
+    };
+
+    const combinedData = [
+        ...data.map(item => ({type: 'product', ...item})),
+        ...contracts.map(item => ({type: 'contract', ...item})),
+        ...payments.map(item => ({type: 'payment', ...item})),
+    ];
+
+    const filteredResults = combinedData.filter(item => {
+        const term = searchTerm.toLowerCase();
+        if (item.type === 'product') {
+            return item.name.toLowerCase().includes(term) || item.sku.toLowerCase().includes(term) || item.sellerName.toLowerCase().includes(term);
+        } else if (item.type === 'contract') {
+            return item.company_name.toLowerCase().includes(term) || item.contact_person.toLowerCase().includes(term);
+        } else if (item.type === 'payment') {
+            return item.payment.toLowerCase().includes(term) || item.legal_name.toLowerCase().includes(term) || item.status.toLowerCase().includes(term);
+        }
+        return false;
+    });
     // Handle input change and filter data
 
     // Replace javascript:void(0) paths with your paths
@@ -188,6 +215,75 @@ export default function Navbar() {
 
                         </ul>
                     </div>
+                    <button
+                        onClick={handleSearchToggle}
+                        className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 " viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round"
+                                  d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+                        </svg>
+                    </button>
+                    {isSearchOpen && (
+                        <div
+                            className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-40 backdrop-blur-sm">
+                            <div className="relative bg-white p-8 rounded-lg shadow-lg w-11/12 max-w-2xl">
+                                <button
+                                    onClick={handleSearchToggle}
+                                    className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 p-3"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                                <input
+                                    type="text"
+                                    placeholder="Search across products, contracts, payments..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500 text-lg"
+                                />
+
+                                {/* Display search results */}
+                                <div className="mt-4 max-h-64 overflow-y-auto">
+                                    {filteredResults.length > 0 ? (
+                                        filteredResults.map((item, idx) => (
+                                            <div key={idx} className="border-b py-2 px-2">
+                                                {item.type === 'product' && (
+                                                    <div>
+                                                        <p><strong>Product:</strong> {item.name}</p>
+                                                        <p><strong>SKU:</strong> {item.sku}</p>
+                                                        <p><strong>Seller:</strong> {item.sellerName}</p>
+                                                        <p><strong>Price:</strong> ${item.price}</p>
+                                                    </div>
+                                                )}
+                                                {item.type === 'contract' && (
+                                                    <div>
+                                                        <p><strong>Company:</strong> {item.company_name}</p>
+                                                        <p><strong>Contact:</strong> {item.contact_person}</p>
+                                                        <p><a href={item.download_document} className="text-indigo-600">Download
+                                                            Document</a></p>
+                                                    </div>
+                                                )}
+                                                {item.type === 'payment' && (
+                                                    <div>
+                                                        <p><strong>Payment ID:</strong> {item.payment}</p>
+                                                        <p><strong>Legal Name:</strong> {item.legal_name}</p>
+                                                        <p><strong>Status:</strong> {item.status}</p>
+                                                        <p><strong>Amount:</strong> ${item.payment_amount}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500">No results found.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </nav>
             {
