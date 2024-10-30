@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react'
-import data from './data.json';
 
 
 const dropdownNavs = [
@@ -48,35 +47,15 @@ export default function Navbar() {
 
     const [state, setState] = useState(false)
     const [drapdownState, setDrapdownState] = useState({isActive: false, idx: null})
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filteredData, setFilteredData] = useState(data); // Initialize with all data
 
     // Handle input change and filter data
-    const handleSearch = (e) => {
-        const term = e.target.value;
-        setSearchTerm(term);
-
-        if (term === '') {
-            // Show all data if search is empty
-            setFilteredData(data);
-        } else {
-            // Filter data based on name, sku, or seller name
-            const results = data.filter(
-                (item) =>
-                    item.name.toLowerCase().includes(term.toLowerCase()) ||
-                    item.sku.toLowerCase().includes(term.toLowerCase()) ||
-                    item.sellerName.toLowerCase().includes(term.toLowerCase())
-            );
-            setFilteredData(results);
-        }
-    };
 
     // Replace javascript:void(0) paths with your paths
     const navigation = [
         {title: "Dashboard", path: "javascript:void(0)", isDrapdown: false},
         {title: "Marketplace", path: "javascript:void(0)", isDrapdown: true, navs: dropdownNavs},
-        {title: "Contracts", path: "javascript:void(0)", isDrapdown: false},
-        {title: "Payments", path: "javascript:void(0)", isDrapdown: false},
+        {title: "Contracts", path: "/contracts", isDrapdown: false},
+        {title: "Payments", path: "/payments", isDrapdown: false},
         {title: "Settings", path: "/settings", isDrapdown: false}
     ]
 
@@ -206,41 +185,6 @@ export default function Navbar() {
                                     )
                                 })
                             }
-                            <div className='flex-1 items-center justify-end gap-x-6 space-y-3 md:flex md:space-y-0'>
-                                <div className="relative p-4"> {/* Добавлено relative для родителя */}
-                                    {/* Search Form */}
-                                    <form className="flex items-center space-x-2 border rounded-md p-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                             className="h-5 w-5 flex-none text-gray-300" fill="none" viewBox="0 0 24 24"
-                                             stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                        </svg>
-                                        <input
-                                            className="w-full outline-none appearance-none placeholder-gray-500 text-gray-500 sm:w-auto"
-                                            type="text"
-                                            placeholder="Search"
-                                            value={searchTerm}
-                                            onChange={handleSearch} // Update search term
-                                        />
-                                    </form>
-
-                                    {/* Display Results Dropdown */}
-                                    {filteredData.length > 0 && searchTerm && (
-                                        <div
-                                            className="absolute mt-2 border rounded-md bg-white shadow-md z-50 w-full"> {/* Используем absolute и z-50 */}
-                                            {filteredData.map((item) => (
-                                                <div key={item.sku} className="border-b py-2 px-4 hover:bg-gray-100">
-                                                    <p><strong>Name:</strong> {item.name}</p>
-                                                    <p><strong>SKU:</strong> {item.sku}</p>
-                                                    <p><strong>Seller:</strong> {item.sellerName}</p>
-                                                    <p><strong>Price:</strong> ${item.price.toFixed(2)}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
 
                         </ul>
                     </div>

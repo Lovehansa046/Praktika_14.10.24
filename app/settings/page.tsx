@@ -8,8 +8,8 @@ import BillingSettings from './billing';
 import NotificationSettings from './notifications';
 import IntegrationsSettings from './integrations';
 import SecuritySettings from './security';
-import Navbar from "@/app/navbar";
-import Footer from "@/app/footer";
+import Navbar from "@/app/components/navbar";
+import Footer from "@/app/components/footer";
 
 export default function Settings() {
     const router = useRouter();

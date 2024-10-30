@@ -1,6 +1,6 @@
 "use client"
-import Navbar from "@/app/navbar";
-import Footer from "@/app/footer";
+import Navbar from "@/app/components/navbar";
+import Footer from "@/app/components/footer";
 import Default from "@/app/default";
 
 export default function Home() {
