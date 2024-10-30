@@ -13,7 +13,7 @@ export default function DataList() {
     );
 
     return (
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 mb-6 mt-6">
             <div className="max-w-lg">
                 <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
                     Team members

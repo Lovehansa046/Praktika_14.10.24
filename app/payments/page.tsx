@@ -16,7 +16,7 @@ export default function Payments() {
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar/>
-            <main className="flex-grow max-w-screen-xl mx-4 md:mx-32 px-4 md:px-8">
+            <main className="flex-grow max-w-screen-xl mx-4 md:mx-32 px-4 md:px-8 mb-6 mt-6">
                 <div className="items-start justify-between md:flex">
                     <div className="max-w-lg">
                         <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
