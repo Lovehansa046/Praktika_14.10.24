@@ -92,7 +92,9 @@ export default function Payments() {
                     <p className="text-gray-600 mt-2 text-xs text-center">Export to file all payments</p>
                 </div>
             </main>
-            <Footer/>
+            <div className="w-full mb-6 mt-6">
+                <Footer/>
+            </div>
         </div>
     );
 }

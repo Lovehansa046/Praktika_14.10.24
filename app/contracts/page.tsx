@@ -64,7 +64,10 @@ export default function Payments() {
                     </table>
                 </div>
             </main>
-            <Footer/>
+            {/*<th></th>*/}
+            <div className="w-full mb-6 mt-6">
+                <Footer/>
+            </div>
         </div>
     );
 }
