@@ -18,6 +18,7 @@ export default function DataList() {
                 <table className="w-full table-auto text-sm text-left">
                     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
                     <tr>
+                        <th className="py-3 px-6">sku</th>
                         <th className="py-3 px-6">Name</th>
                         <th className="py-3 px-6">Price</th>
                         <th className="py-3 px-6">Count</th>
@@ -31,6 +32,7 @@ export default function DataList() {
                     {
                         data.map((item, idx) => (
                             <tr key={idx}>
+                                <td className="px-6 py-4 whitespace-nowrap">{item.sku}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{item.price}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{item.count}</td>
