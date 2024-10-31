@@ -1,10 +1,10 @@
-"use client"
-import {useState} from 'react'; // Import useState for state management
+"use client";
+import {useState} from 'react';
 import data from './data.json';
 
 export default function DataList() {
-    const [searchTerm, setSearchTerm] = useState(""); // State for search input
-    const [products, setProducts] = useState(data);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showForm, setShowForm] = useState(false);
     const [newProduct, setNewProduct] = useState({
         sku: "",
         name: "",
@@ -21,44 +21,56 @@ export default function DataList() {
     };
 
     const addProduct = () => {
-        const updatedProduct = {
-            ...newProduct,
-            price: parseFloat(newProduct.price),
-            count: parseInt(newProduct.count),
-            totalPrice: parseFloat(newProduct.price) * parseInt(newProduct.quantity),
-            quantity: parseInt(newProduct.quantity)
-        };
-        setProducts([...products, updatedProduct]);
-        setNewProduct({sku: "", name: "", price: "", count: "", sellerName: "", totalPrice: "", quantity: ""});
+        console.log("Product added:", newProduct);
+        setNewProduct({
+            sku: "",
+            name: "",
+            price: "",
+            count: "",
+            sellerName: "",
+            totalPrice: "",
+            quantity: ""
+        });
+        setShowForm(false); // Hide form after submission
     };
-    // Function to filter data based on the search term
+
     const filteredData = data.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Filter by name
-        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) || // Filter by SKU
-        item.sellerName.toLowerCase().includes(searchTerm.toLowerCase()) // Filter by seller name
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.sellerName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8 mb-6 mt-6">
-            <div className="max-w-lg">
-                <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
-                    Team members
-                </h3>
-                <p className="text-gray-600 mt-2">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                </p>
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 mt-6">
+            <div className="items-start justify-between md:flex">
+
+                <div className="max-w-lg">
+                    <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
+                        Team members
+                    </h3>
+                    <p className="text-gray-600 mt-2">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    </p>
+                </div>
+                <div className="max-w-lg mb-6 mt-6">
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                    >
+                        Create Product
+                    </button>
+                </div>
             </div>
-            {/* Search Input */}
             <div className="mt-8">
                 <input
                     type="text"
                     placeholder="Search by SKU, Name, or Seller Name..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)} // Update search term on input change
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500"
                 />
             </div>
-            <div className="mt-12 shadow-sm border rounded-lg overflow-x-auto">
+            <div className="mt-8 shadow-sm border rounded-lg overflow-x-auto">
                 <table className="w-full table-auto text-sm text-left">
                     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
                     <tr>
@@ -86,99 +98,62 @@ export default function DataList() {
                     </tbody>
                 </table>
             </div>
-            <div className="p-4 max-w-md mx-auto">
-                <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        addProduct();
-                    }}
-                    className="space-y-4"
-                >
-                    <div>
-                        <label className="block text-sm font-medium">SKU</label>
-                        <input
-                            type="text"
-                            name="sku"
-                            value={newProduct.sku}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
+
+            {/* Modal for adding product */}
+            {showForm && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                        onClick={() => setShowForm(false)}
+                    ></div>
+
+                    {/* Modal Form */}
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="relative p-6 max-w-md w-full bg-white rounded shadow-lg">
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+
+                            <h2 className="text-xl font-bold mb-4">Add New Product</h2>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    addProduct();
+                                }}
+                                className="space-y-4"
+                            >
+                                {["sku", "name", "price", "count", "sellerName", "totalPrice", "quantity"].map((field, idx) => (
+                                    <div key={idx}>
+                                        <label className="block text-sm font-medium capitalize">{field}</label>
+                                        <input
+                                            type={field === "price" || field === "count" || field === "quantity" ? "number" : "text"}
+                                            name={field}
+                                            value={newProduct[field]}
+                                            onChange={handleProductChange}
+                                            className="w-full px-3 py-2 border rounded"
+                                            required
+                                        />
+                                    </div>
+                                ))}
+                                <button
+                                    type="submit"
+                                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                                >
+                                    Add Product
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium">Name</label>
-                        <input
-                            type="input"
-                            name="name"
-                            value={newProduct.name}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Price</label>
-                        <input
-                            type="number"
-                            name="price"
-                            value={newProduct.price}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Count</label>
-                        <input
-                            type="number"
-                            name="count"
-                            value={newProduct.count}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Seller name</label>
-                        <input
-                            type="text"
-                            name="sellerName"
-                            value={newProduct.sellerName}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Total price</label>
-                        <input
-                            type="text"
-                            name="totalPrice"
-                            value={newProduct.totalPrice}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Quantity</label>
-                        <input
-                            type="number"
-                            name="quantity"
-                            value={newProduct.quantity}
-                            onChange={handleProductChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-                    >
-                        Add Product
-                    </button>
-                </form>
-            </div>
+                </>
+            )}
         </div>
-    )
+    );
 }

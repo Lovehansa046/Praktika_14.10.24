@@ -8,6 +8,7 @@ import data from "./data.payments.json";
 export default function Payments() {
     const [searchTerm, setSearchTerm] = useState("");
     const [payments, setPayments] = useState(data);
+    const [showForm, setShowForm] = useState(false);
     const [newPayment, setNewPayment] = useState({
         payment: "",
         payment_amount: "",
@@ -24,10 +25,11 @@ export default function Payments() {
     const addPayment = () => {
         const updatedPayment = {...newPayment, payment_amount: parseFloat(newPayment.payment_amount)};
         setPayments([...payments, updatedPayment]);
-        setNewPayment({payment: "", payment_amount: "", payment_date: "", legal_name: "", status: ""});
+        setNewPayment({payment: "", payment_amount: "", payment_date: "", legal_name: "", status: "Pending"});
+        setShowForm(false);
     };
 
-    const filteredData = data.filter(item =>
+    const filteredData = payments.filter(item =>
         item.payment.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.legal_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -42,11 +44,19 @@ export default function Payments() {
                             All Payments
                         </h3>
                         <p className="text-gray-600 mt-2 text-sm md:text-base">
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                            View and manage payment records efficiently.
                         </p>
                     </div>
-                </div>
+                    <div className="max-w-lg mb-6 mt-6">
 
+                        <button
+                            onClick={() => setShowForm(true)}
+                            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                        >
+                            Add Payment
+                        </button>
+                    </div>
+                </div>
                 {/* Search Input */}
                 <div className="mt-8">
                     <input
@@ -105,83 +115,87 @@ export default function Payments() {
 
                 <div className="mt-12 flex flex-col items-center relative h-max overflow-auto">
                     <button
-                        className="w-full px-4 py-2 text-white bg-indigo-600 rounded-lg duration-150 hover:bg-indigo-700 active:shadow-lg">
-                        Export to file
+                        className="w-full px-4 py-2 text-white bg-indigo-600 rounded-lg duration-150 hover:bg-indigo-700 active:shadow-lg"
+                    >
+                        Export all payments
                     </button>
-                    <p className="text-gray-600 mt-2 text-xs text-center">Export to file all payments</p>
+                    <p className="text-gray-600 mt-2 text-xs text-center">Export all payment records to a file</p>
                 </div>
             </main>
-            <div className="p-4 max-w-md mx-auto">
-                <h2 className="text-xl font-bold mb-4">Add New Payments</h2>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        addPayment();
-                    }}
-                    className="space-y-4"
-                >
-                    <div>
-                        <label className="block text-sm font-medium">Payment</label>
-                        <input
-                            type="text"
-                            name="payment"
-                            value={newPayment.payment}
-                            onChange={handlePaymentChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
+
+            {/* Add Payment Form Modal */}
+            {showForm && (
+                <>
+                    {/* Background Overlay */}
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                        onClick={() => setShowForm(false)}
+                    ></div>
+
+                    {/* Centered Form Modal */}
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="relative p-6 max-w-md w-full bg-white rounded shadow-lg">
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+
+                            <h2 className="text-xl font-bold mb-4">Add New Payment</h2>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    addPayment();
+                                }}
+                                className="space-y-4"
+                            >
+                                {["payment", "payment_amount", "payment_date", "legal_name"].map((field, idx) => (
+                                    <div key={idx}>
+                                        <label
+                                            className="block text-sm font-medium capitalize">{field.replace("_", " ")}</label>
+                                        <input
+                                            type={field === "payment_amount" ? "number" : field.includes("date") ? "date" : "text"}
+                                            name={field}
+                                            value={newPayment[field]}
+                                            onChange={handlePaymentChange}
+                                            className="w-full px-3 py-2 border rounded"
+                                            required={field !== "legal_name"}
+                                        />
+                                    </div>
+                                ))}
+
+                                <div>
+                                    <label className="block text-sm font-medium">Status</label>
+                                    <select
+                                        name="status"
+                                        value={newPayment.status}
+                                        onChange={handlePaymentChange}
+                                        className="w-full px-3 py-2 border rounded"
+                                    >
+                                        <option value="Pending">Pending</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Overdue">Overdue</option>
+                                    </select>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                                >
+                                    Add Payment
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium">Payment amount</label>
-                        <input
-                            type="number"
-                            name="payment_amount"
-                            value={newPayment.payment_amount}
-                            onChange={handlePaymentChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Payment date</label>
-                        <input
-                            type="date"
-                            name="payment_date"
-                            value={newPayment.payment_date}
-                            onChange={handlePaymentChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Legal name</label>
-                        <input
-                            type="text"
-                            name="legal_name"
-                            value={newPayment.legal_name}
-                            onChange={handlePaymentChange}
-                            className="w-full px-3 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Status</label>
-                        <input
-                            type="text"
-                            name="status"
-                            value={newPayment.status}
-                            onChange={handlePaymentChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-                    >
-                        Add Payments
-                    </button>
-                </form>
-            </div>
+                </>
+            )}
+
             <div className="w-full mb-6 mt-6">
                 <Footer/>
             </div>

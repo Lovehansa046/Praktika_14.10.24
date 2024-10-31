@@ -7,7 +7,8 @@ import data from "./data.contracts.json";
 
 export default function Contracts() {
     const [searchTerm, setSearchTerm] = useState("");
-    const [setContracts] = useState(data);
+    const [contracts, setContracts] = useState(data);
+    const [showForm, setShowForm] = useState(false);
     const [newContract, setNewContract] = useState({
         company_name: "",
         created_at: "",
@@ -16,13 +17,13 @@ export default function Contracts() {
         contact_person: ""
     });
 
-    // Update form input values
+    // Handle input changes for the new contract form
     const handleInputChange = (e) => {
         const {name, value} = e.target;
         setNewContract((prev) => ({...prev, [name]: value}));
     };
 
-    // Add new contract to the list
+    // Add a new contract to the list
     const addContract = () => {
         setContracts((prevContracts) => [...prevContracts, newContract]);
         setNewContract({
@@ -32,9 +33,11 @@ export default function Contracts() {
             download_document: "",
             contact_person: ""
         });
+        setShowForm(false);
     };
 
-    const filteredData = data.filter(item =>
+    // Filtered contracts for search term
+    const filteredContracts = contracts.filter(item =>
         item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.contact_person.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -44,13 +47,23 @@ export default function Contracts() {
             <Navbar/>
             <main className="flex-grow max-w-screen-xl mx-4 md:mx-32 px-4 md:px-8 mb-6 mt-6">
                 <div className="items-start justify-between md:flex">
+
                     <div className="max-w-lg">
                         <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
                             All Contracts
                         </h3>
                         <p className="text-gray-600 mt-2 text-sm md:text-base">
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                            Manage contracts and add new ones as needed.
                         </p>
+                    </div>
+                    <div className="max-w-lg mb-6 mt-6">
+
+                        <button
+                            onClick={() => setShowForm(true)}
+                            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                        >
+                            Create Contract
+                        </button>
                     </div>
                 </div>
 
@@ -77,12 +90,21 @@ export default function Contracts() {
                         </tr>
                         </thead>
                         <tbody className="text-gray-600 divide-y">
-                        {filteredData.map((item, idx) => (
+                        {filteredContracts.map((item, idx) => (
                             <tr key={idx}>
                                 <td className="pr-6 py-4 whitespace-nowrap">{item.company_name}</td>
                                 <td className="pr-6 py-4 whitespace-nowrap">{item.created_at}</td>
                                 <td className="pr-6 py-4 whitespace-nowrap">{item.signed_at}</td>
-                                <td className="pr-6 py-4 whitespace-nowrap">{item.download_document}</td>
+                                <td className="pr-6 py-4 whitespace-nowrap">
+                                    <a
+                                        href={item.download_document}
+                                        className="text-indigo-600 hover:underline"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Download
+                                    </a>
+                                </td>
                                 <td className="pr-6 py-4 whitespace-nowrap">{item.contact_person}</td>
                             </tr>
                         ))}
@@ -91,78 +113,65 @@ export default function Contracts() {
                 </div>
             </main>
 
-            <div className="p-4 max-w-md mx-auto">
-                <h2 className="text-xl font-bold mb-4">Add New Contract</h2>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        addContract();
-                    }}
-                    className="space-y-4"
-                >
-                    <div>
-                        <label className="block text-sm font-medium">Company Name</label>
-                        <input
-                            type="text"
-                            name="company_name"
-                            value={newContract.company_name}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
+            {/* Modal for Adding New Contract */}
+            {showForm && (
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+                        onClick={() => setShowForm(false)}
+                    ></div>
+
+                    {/* Centered Form Modal */}
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                        <div className="relative p-6 max-w-md w-full bg-white rounded shadow-lg">
+                            <button
+                                onClick={() => setShowForm(false)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+
+                            <h2 className="text-xl font-bold mb-4">Add New Contract</h2>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    addContract();
+                                }}
+                                className="space-y-4"
+                            >
+                                {["company_name", "created_at", "signed_at", "download_document", "contact_person"].map((field, idx) => (
+                                    <div key={idx}>
+                                        <label className="block text-sm font-medium capitalize">
+                                            {field.replace("_", " ")}
+                                        </label>
+                                        <input
+                                            type={field.includes("at") ? "date" : field === "download_document" ? "url" : "text"}
+                                            name={field}
+                                            value={newContract[field]}
+                                            onChange={handleInputChange}
+                                            className="w-full px-3 py-2 border rounded"
+                                            required={field !== "download_document"}
+                                        />
+                                    </div>
+                                ))}
+
+                                <button
+                                    type="submit"
+                                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                                >
+                                    Add Contract
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium">Created At</label>
-                        <input
-                            type="date"
-                            name="created_at"
-                            value={newContract.created_at}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Signed At</label>
-                        <input
-                            type="date"
-                            name="signed_at"
-                            value={newContract.signed_at}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Download Document URL</label>
-                        <input
-                            type="url"
-                            name="download_document"
-                            value={newContract.download_document}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium">Contact Person</label>
-                        <input
-                            type="text"
-                            name="contact_person"
-                            value={newContract.contact_person}
-                            onChange={handleInputChange}
-                            className="w-full px-3 py-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-                    >
-                        Add Contract
-                    </button>
-                </form>
-            </div>
-            {/*<th></th>*/}
+                </>
+            )}
+
             <div className="w-full mb-6 mt-6">
                 <Footer/>
             </div>
