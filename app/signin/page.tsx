@@ -127,7 +127,7 @@ export default function SignIn() {
                     <a href="javascript:void(0)" className="hover:text-indigo-600">Forgot password?</a>
                 </div>
                 <div className="text-center mt-5 space-y-2">
-                    <p className="">You want to leave home page? <a href="/"
+                    <p className="">You want to leave home page? <a href="/home"
                                                                     className="font-medium text-indigo-600 hover:text-indigo-500">Home</a>
                     </p>
                 </div>
