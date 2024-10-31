@@ -178,7 +178,7 @@ export default function Payments() {
                         type="submit"
                         className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
                     >
-                        Add Product
+                        Add Payments
                     </button>
                 </form>
             </div>
