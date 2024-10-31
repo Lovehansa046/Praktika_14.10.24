@@ -4,7 +4,33 @@ import data from './data.json';
 
 export default function DataList() {
     const [searchTerm, setSearchTerm] = useState(""); // State for search input
+    const [products, setProducts] = useState(data);
+    const [newProduct, setNewProduct] = useState({
+        sku: "",
+        name: "",
+        price: "",
+        count: "",
+        sellerName: "",
+        totalPrice: "",
+        quantity: ""
+    });
 
+    const handleProductChange = (e) => {
+        const {name, value} = e.target;
+        setNewProduct((prev) => ({...prev, [name]: value}));
+    };
+
+    const addProduct = () => {
+        const updatedProduct = {
+            ...newProduct,
+            price: parseFloat(newProduct.price),
+            count: parseInt(newProduct.count),
+            totalPrice: parseFloat(newProduct.price) * parseInt(newProduct.quantity),
+            quantity: parseInt(newProduct.quantity)
+        };
+        setProducts([...products, updatedProduct]);
+        setNewProduct({sku: "", name: "", price: "", count: "", sellerName: "", totalPrice: "", quantity: ""});
+    };
     // Function to filter data based on the search term
     const filteredData = data.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) || // Filter by name
@@ -59,6 +85,99 @@ export default function DataList() {
                     ))}
                     </tbody>
                 </table>
+            </div>
+            <div className="p-4 max-w-md mx-auto">
+                <h2 className="text-xl font-bold mb-4">Add New Product</h2>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        addProduct();
+                    }}
+                    className="space-y-4"
+                >
+                    <div>
+                        <label className="block text-sm font-medium">SKU</label>
+                        <input
+                            type="text"
+                            name="sku"
+                            value={newProduct.sku}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Name</label>
+                        <input
+                            type="input"
+                            name="name"
+                            value={newProduct.name}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Price</label>
+                        <input
+                            type="number"
+                            name="price"
+                            value={newProduct.price}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Count</label>
+                        <input
+                            type="number"
+                            name="count"
+                            value={newProduct.count}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Seller name</label>
+                        <input
+                            type="text"
+                            name="sellerName"
+                            value={newProduct.sellerName}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Total price</label>
+                        <input
+                            type="text"
+                            name="totalPrice"
+                            value={newProduct.totalPrice}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Quantity</label>
+                        <input
+                            type="number"
+                            name="quantity"
+                            value={newProduct.quantity}
+                            onChange={handleProductChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                    >
+                        Add Product
+                    </button>
+                </form>
             </div>
         </div>
     )

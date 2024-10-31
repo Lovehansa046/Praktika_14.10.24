@@ -7,6 +7,25 @@ import data from "./data.payments.json";
 
 export default function Payments() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [payments, setPayments] = useState(data);
+    const [newPayment, setNewPayment] = useState({
+        payment: "",
+        payment_amount: "",
+        payment_date: "",
+        legal_name: "",
+        status: "Pending"
+    });
+
+    const handlePaymentChange = (e) => {
+        const {name, value} = e.target;
+        setNewPayment((prev) => ({...prev, [name]: value}));
+    };
+
+    const addPayment = () => {
+        const updatedPayment = {...newPayment, payment_amount: parseFloat(newPayment.payment_amount)};
+        setPayments([...payments, updatedPayment]);
+        setNewPayment({payment: "", payment_amount: "", payment_date: "", legal_name: "", status: ""});
+    };
 
     const filteredData = data.filter(item =>
         item.payment.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,6 +111,77 @@ export default function Payments() {
                     <p className="text-gray-600 mt-2 text-xs text-center">Export to file all payments</p>
                 </div>
             </main>
+            <div className="p-4 max-w-md mx-auto">
+                <h2 className="text-xl font-bold mb-4">Add New Payments</h2>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        addPayment();
+                    }}
+                    className="space-y-4"
+                >
+                    <div>
+                        <label className="block text-sm font-medium">Payment</label>
+                        <input
+                            type="text"
+                            name="payment"
+                            value={newPayment.payment}
+                            onChange={handlePaymentChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Payment amount</label>
+                        <input
+                            type="number"
+                            name="payment_amount"
+                            value={newPayment.payment_amount}
+                            onChange={handlePaymentChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Payment date</label>
+                        <input
+                            type="date"
+                            name="payment_date"
+                            value={newPayment.payment_date}
+                            onChange={handlePaymentChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Legal name</label>
+                        <input
+                            type="text"
+                            name="legal_name"
+                            value={newPayment.legal_name}
+                            onChange={handlePaymentChange}
+                            className="w-full px-3 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Status</label>
+                        <input
+                            type="text"
+                            name="status"
+                            value={newPayment.status}
+                            onChange={handlePaymentChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                    >
+                        Add Product
+                    </button>
+                </form>
+            </div>
             <div className="w-full mb-6 mt-6">
                 <Footer/>
             </div>

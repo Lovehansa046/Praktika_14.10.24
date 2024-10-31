@@ -5,8 +5,34 @@ import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import data from "./data.contracts.json";
 
-export default function Payments() {
+export default function Contracts() {
     const [searchTerm, setSearchTerm] = useState("");
+    const [setContracts] = useState(data);
+    const [newContract, setNewContract] = useState({
+        company_name: "",
+        created_at: "",
+        signed_at: "",
+        download_document: "",
+        contact_person: ""
+    });
+
+    // Update form input values
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setNewContract((prev) => ({...prev, [name]: value}));
+    };
+
+    // Add new contract to the list
+    const addContract = () => {
+        setContracts((prevContracts) => [...prevContracts, newContract]);
+        setNewContract({
+            company_name: "",
+            created_at: "",
+            signed_at: "",
+            download_document: "",
+            contact_person: ""
+        });
+    };
 
     const filteredData = data.filter(item =>
         item.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -64,6 +90,78 @@ export default function Payments() {
                     </table>
                 </div>
             </main>
+
+            <div className="p-4 max-w-md mx-auto">
+                <h2 className="text-xl font-bold mb-4">Add New Contract</h2>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        addContract();
+                    }}
+                    className="space-y-4"
+                >
+                    <div>
+                        <label className="block text-sm font-medium">Company Name</label>
+                        <input
+                            type="text"
+                            name="company_name"
+                            value={newContract.company_name}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Created At</label>
+                        <input
+                            type="date"
+                            name="created_at"
+                            value={newContract.created_at}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Signed At</label>
+                        <input
+                            type="date"
+                            name="signed_at"
+                            value={newContract.signed_at}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Download Document URL</label>
+                        <input
+                            type="url"
+                            name="download_document"
+                            value={newContract.download_document}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Contact Person</label>
+                        <input
+                            type="text"
+                            name="contact_person"
+                            value={newContract.contact_person}
+                            onChange={handleInputChange}
+                            className="w-full px-3 py-2 border rounded"
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                    >
+                        Add Contract
+                    </button>
+                </form>
+            </div>
             {/*<th></th>*/}
             <div className="w-full mb-6 mt-6">
                 <Footer/>
