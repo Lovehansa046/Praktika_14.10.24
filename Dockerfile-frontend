@@ -4,14 +4,14 @@ FROM node:18
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы package.json и package-lock.json
-COPY package.json package-lock.json ./
+# Копируем package.json и package-lock.json из папки frontend
+COPY frontend/package.json frontend/package-lock.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
-# Копируем все файлы проекта в контейнер
-COPY . .
+# Копируем все файлы проекта из папки frontend в контейнер
+COPY frontend/ .
 
 # Устанавливаем переменную окружения для разработки
 ENV NODE_ENV=development
