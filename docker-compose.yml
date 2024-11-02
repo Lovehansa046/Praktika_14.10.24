@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: /backend/Dockerfile-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/database
+    environment:
+      - DATABASE_URL=postgresql://postgres:Plotar1404@localhost:5432/circular
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: /frontend/Dockerfile-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000  # URL для взаимодействия с backend
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Plotar1404
+      POSTGRES_DB: circular
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
