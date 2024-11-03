@@ -3,11 +3,11 @@ services:
   backend:
     build:
       context: .
-      dockerfile: /backend/Dockerfile-backend
+      dockerfile: /backend-app/Dockerfile-backend
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/database
+      - ./backend-app:/database
     environment:
       - DATABASE_URL=postgresql://postgres:Plotar1404@localhost:5432/circular
     networks:
@@ -16,11 +16,11 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: /frontend/Dockerfile-frontend
+      dockerfile: /frontend-app/Dockerfile-frontend
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app
+      - ./frontend-app:/app
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8000  # URL для взаимодействия с backend
     networks:
