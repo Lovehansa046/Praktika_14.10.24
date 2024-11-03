@@ -1,6 +1,6 @@
 # create_tables.py
 from sqlalchemy import inspect
-from database import engine, Base
+from database import engine
 from models import User, UserSettings, Item, Contract, Payment
 
 def create_tables_if_not_exist():

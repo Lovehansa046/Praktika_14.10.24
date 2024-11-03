@@ -7,7 +7,7 @@ def init_db():
     """Инициализирует базу данных и возвращает необходимые компоненты."""
 
     # URL подключения к базе данных PostgreSQL
-    database_url = "postgresql://postgres:Plotar1404@db:5432/circular"
+    database_url = "postgresql://postgres:Plotar1404@db:5432/circular_base"
 
     # Создаем движок базы данных
     engine = create_engine(database_url)

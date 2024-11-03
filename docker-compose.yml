@@ -9,9 +9,24 @@ services:
     volumes:
       - ./backend-app:/database
     environment:
-      - DATABASE_URL=postgresql://postgres:Plotar1404@localhost:5432/circular
+      DATABASE_URL: postgresql://postgres:Plotar1404@localhost:5432/circular
+      MINIO_URL: "http://minio:9000"
     networks:
       - app-network
+
+  minio:
+    image: minio/minio
+    environment:
+      MINIO_ROOT_USER: "Root123"
+      MINIO_ROOT_PASSWORD: "Root123312213n"
+    command: server --console-address :9001 /data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ~/minio/data:/data
+    networks:
+      - app-network  # Заменено на app-network
 
   frontend:
     build:
@@ -22,7 +37,7 @@ services:
     volumes:
       - ./frontend-app:/app
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000  # URL для взаимодействия с backend
+      - NEXT_PUBLIC_API_URL=http://backend:8000
     networks:
       - app-network
 
@@ -41,4 +56,5 @@ volumes:
   postgres_data:
 
 networks:
-  app-network:
+  app-network:  # Убедитесь, что здесь используется app-network
+    driver: bridge
