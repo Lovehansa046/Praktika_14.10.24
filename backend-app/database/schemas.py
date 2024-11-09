@@ -13,8 +13,8 @@ class TransactionType(str, Enum):
 class ItemBase(BaseModel):
     name: str
     description: Optional[str] = None
-    # grade: Optional[str] = None
-    # active: bool
+    grade: Optional[str] = None
+    active: bool
     sku: Optional[str] = None
     count: int
     image_url: Optional[str] = None
@@ -39,3 +39,29 @@ class ItemResponse(ItemBase):
 
     class Config:
         orm_mode = True
+
+
+class UserCreate(BaseModel):
+    name: str
+    surname: str
+    email: str
+    password: str  # Пароль, который будем хэшировать перед сохранением
+    verified: Optional[bool] = False
+    active: Optional[bool] = True
+
+class ContractCreate(BaseModel):
+    item_id: int
+    buyer_user_id: int
+    seller_user_id: int
+    signed: bool = False
+    total_value: Decimal
+
+class PaymentStatus(str, Enum):
+    PENDING = "PENDING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+class PaymentCreate(BaseModel):
+    received: bool
+    status: PaymentStatus
+    contract_id: int

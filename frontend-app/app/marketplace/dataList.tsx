@@ -12,7 +12,6 @@ export default function DataList() {
         count: "",
         sellerName: "",
         totalPrice: "",
-        quantity: ""
     });
 
     const handleProductChange = (e) => {
@@ -80,7 +79,6 @@ export default function DataList() {
                         <th className="py-3 px-6">Count</th>
                         <th className="py-3 px-6">Seller Name</th>
                         <th className="py-3 px-6">Total Price</th>
-                        <th className="py-3 px-6">Quantity</th>
                     </tr>
                     </thead>
                     <tbody className="text-gray-600 divide-y">
@@ -92,7 +90,6 @@ export default function DataList() {
                             <td className="px-6 py-4 whitespace-nowrap">{item.count}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item.sellerName}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item.totalPrice}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item.quantity}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -130,11 +127,11 @@ export default function DataList() {
                                 }}
                                 className="space-y-4"
                             >
-                                {["sku", "name", "price", "count", "sellerName", "totalPrice", "quantity"].map((field, idx) => (
+                                {["sku", "name", "price", "count", "sellerName", "totalPrice"].map((field, idx) => (
                                     <div key={idx}>
                                         <label className="block text-sm font-medium capitalize">{field}</label>
                                         <input
-                                            type={field === "price" || field === "count" || field === "quantity" ? "number" : "text"}
+                                            type={field === "price" || field === "count" ? "number" : "text"}
                                             name={field}
                                             value={newProduct[field]}
                                             onChange={handleProductChange}

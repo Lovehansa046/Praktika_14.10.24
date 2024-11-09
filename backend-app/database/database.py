@@ -1,35 +1,32 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import func
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, TIMESTAMP
+# from datetime import datetime
 
+# Строка подключения к базе данных PostgreSQL
 
-def init_db():
-    """Инициализирует базу данных и возвращает необходимые компоненты."""
+# Базовый класс для моделей
+Base = declarative_base()
 
-    # URL подключения к базе данных PostgreSQL
-    database_url = "postgresql://postgres:Plotar1404@db:5432/circular_base"
+def get_engine():
+    DATABASE_URL = "postgresql://postgres:Plotar1404@db:5432/circular"
+    engine = create_engine(DATABASE_URL, echo=True)
+    return engine
 
-    # Создаем движок базы данных
-    engine = create_engine(database_url)
+def get_session():
+    init_db()
+    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
 
-    # Создаем базовый класс для моделей
-    Base = declarative_base()
-
-    # Создаем сессию
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    # Возвращаем движок, базовый класс и функцию для получения сессий
-    return engine, Base, SessionLocal
-
-
-def get_db(session_local):
-    """Создает генератор сессий для работы с базой данных."""
-    db = session_local()
+def get_db():
+    SessionLocal = get_session()
+    db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
 
+def init_db():
+    Base.metadata.create_all(bind=get_engine())
 
-# Инициализация базы данных
-engine, Base, SessionLocal = init_db()

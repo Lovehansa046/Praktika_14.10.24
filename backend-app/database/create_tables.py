@@ -1,9 +1,19 @@
-# create_tables.py
 from sqlalchemy import inspect
-from database import engine
+from sqlalchemy.exc import OperationalError
+from database import get_engine
 from models import User, UserSettings, Item, Contract, Payment
 
+
 def create_tables_if_not_exist():
+    try:
+        # Проверка подключения к базе данных
+        engine = get_engine()
+        connection = engine.connect()
+        connection.close()
+    except OperationalError:
+        print("Ошибка подключения к базе данных. Проверьте, запущена ли база данных.")
+        return  # Прекращаем выполнение функции, если подключение не удалось
+
     # Получаем список существующих таблиц в базе данных
     inspector = inspect(engine)
     existing_tables = inspector.get_table_names()
@@ -20,4 +30,4 @@ def create_tables_if_not_exist():
             print(f"Таблица {table.__tablename__} уже существует, пропускаем.")
 
 
-create_tables_if_not_exist()
+
