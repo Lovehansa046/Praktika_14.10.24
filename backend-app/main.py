@@ -1,7 +1,9 @@
+from typing import List
+
 from fastapi import FastAPI, Depends, HTTPException
 from database.database import init_db, get_db  # Убедитесь, что get_db и init_db импортируются правильно
 from database.models import Item, User, Contract, Payment
-from database.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate  # Схема ItemBase
+from database.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, ContractView  # Схема ItemBase
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from datetime import datetime
@@ -44,10 +46,15 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 
+@app.get("/contracts/", response_model=List[ContractView])
+def get_contracts(db: Session = Depends(get_db)):
+    contracts = db.query(Contract).all()
+    if not contracts:
+        raise HTTPException(status_code=404, detail="No contracts found")
+    return contracts
 
 
-#TODO Ответ по созданию платежа 500 ошибка
-@app.post("create/payments/", response_model=PaymentCreate)
+@app.post("/create/payments/", response_model=PaymentCreate)
 def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     # Проверяем, существует ли контракт с указанным contract_id
     db_contract = db.query(Contract).filter(Contract.id == payment.contract_id).first()
@@ -57,7 +64,7 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     # Создаем объект Payment для сохранения в базе данных
     db_payment = Payment(
         received=payment.received,
-        status=payment.status,
+        status=payment.status,  # Преобразуем статус в верхний регистр
         contract_id=payment.contract_id,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
@@ -68,6 +75,7 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_payment)
     return db_payment
+
 
 @app.post("/create/contracts/", response_model=ContractCreate)
 def create_contract(contract: ContractCreate, db: Session = Depends(get_db)):
@@ -103,6 +111,7 @@ def create_contract(contract: ContractCreate, db: Session = Depends(get_db)):
     db.refresh(db_contract)
     return db_contract
 
+
 @app.post("/create/user")
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     # Проверка, существует ли пользователь с таким же email
@@ -128,11 +137,13 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
     return {"id": new_user.id, "name": new_user.name, "email": new_user.email}
 
+
 # Событие, выполняемое при запуске приложения
 @app.on_event("startup")
 def startup_event():
     # Инициализация базы данных
     init_db()
+
 
 # Ваши маршруты и остальные обработчики
 @app.get("/")

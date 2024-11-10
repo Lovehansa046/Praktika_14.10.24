@@ -57,11 +57,32 @@ class ContractCreate(BaseModel):
     total_value: Decimal
 
 class PaymentStatus(str, Enum):
-    PENDING = "PENDING"
-    COMPLETED = "COMPLETED"
-    FAILED = "FAILED"
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 class PaymentCreate(BaseModel):
     received: bool
     status: PaymentStatus
     contract_id: int
+
+
+class UserBase(BaseModel):
+    id: int
+    name: str
+    surname: str
+
+    class Config:
+        from_attributes = True
+class ContractView(BaseModel):
+    id: int
+    item: ItemBase
+    buyer: UserBase
+    seller: UserBase
+    signed: bool
+    created_at: datetime
+    updated_at: datetime
+    total_value: Decimal
+
+    class Config:
+        from_attributes = True
