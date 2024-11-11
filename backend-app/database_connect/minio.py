@@ -1,7 +1,7 @@
 from minio import Minio
-from database import get_db
+# from database import get_db
 import io
-from models import Item
+# from models import Item
 def get_bucket_name():
     bucket_name = "mybucket"
     return bucket_name
@@ -29,11 +29,12 @@ def upload_file_to_minio(file):
     return True
 
 
-def save_file_metadata_to_database(file):
-    db=get_db()
-    db_file=Item(title=file.filename,
-                size=23324,
-                path=f"{get_bucket_name()}/{file.filename}")
-    db.add(db_file)
-    db.commit()
-    db.refresh(db_file)
+
+# def save_file_metadata_to_database(file):
+#     db=get_db()
+#     db_file=Item(title=file.filename,
+#                 size=23324,
+#                 path=f"{get_bucket_name()}/{file.filename}")
+#     db.add(db_file)
+#     db.commit()
+#     db.refresh(db_file)

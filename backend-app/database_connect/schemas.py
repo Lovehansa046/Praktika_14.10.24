@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from decimal import Decimal
 from datetime import datetime
@@ -63,7 +63,7 @@ class PaymentStatus(str, Enum):
 
 class PaymentCreate(BaseModel):
     received: bool
-    status: PaymentStatus
+    status: List[PaymentStatus]
     contract_id: int
 
 

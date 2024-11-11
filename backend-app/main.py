@@ -1,9 +1,9 @@
 from typing import List
 
 from fastapi import FastAPI, Depends, HTTPException
-from database.database import init_db, get_db  # Убедитесь, что get_db и init_db импортируются правильно
-from database.models import Item, User, Contract, Payment
-from database.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, ContractView  # Схема ItemBase
+from database_connect.database import init_db, get_db  # Убедитесь, что get_db и init_db импортируются правильно
+from database_connect.models import Item, User, Contract, Payment
+from database_connect.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, ContractView  # Схема ItemBase
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from datetime import datetime
