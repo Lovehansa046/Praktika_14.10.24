@@ -1,9 +1,10 @@
 from typing import List
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Form
 from database_connect.database import init_db, get_db  # Убедитесь, что get_db и init_db импортируются правильно
 from database_connect.models import Item, User, Contract, Payment
-from database_connect.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, ContractView  # Схема ItemBase
+from database_connect.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, \
+    ContractView, PaymentStatus  # Схема ItemBase
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from datetime import datetime
@@ -55,17 +56,19 @@ def get_contracts(db: Session = Depends(get_db)):
 
 
 @app.post("/create/payments/", response_model=PaymentCreate)
-def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
+def create_payment(contract_id: int = Form(...),  # Используем Form для contract_id
+                   received: float = Form(...),  # Используем Form для received
+                   status: PaymentStatus = Form(...), db: Session = Depends(get_db)):
     # Проверяем, существует ли контракт с указанным contract_id
-    db_contract = db.query(Contract).filter(Contract.id == payment.contract_id).first()
+    db_contract = db.query(Contract).filter(Contract.id == contract_id).first()
     if not db_contract:
         raise HTTPException(status_code=404, detail="Contract not found")
 
     # Создаем объект Payment для сохранения в базе данных
     db_payment = Payment(
-        received=payment.received,
-        status=payment.status,  # Преобразуем статус в верхний регистр
-        contract_id=payment.contract_id,
+        received=received,
+        status=status.name,  # Преобразуем статус в строку
+        contract_id=contract_id,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
     )

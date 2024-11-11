@@ -28,7 +28,7 @@ def upload_file_to_minio(file):
             data=file_stream)
     return True
 
-
+def upload_data_to_minio(file)
 
 # def save_file_metadata_to_database(file):
 #     db=get_db()
