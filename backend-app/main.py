@@ -67,7 +67,7 @@ def create_payment(contract_id: int = Form(...),  # Используем Form д
     # Создаем объект Payment для сохранения в базе данных
     db_payment = Payment(
         received=received,
-        status=status.name,  # Преобразуем статус в строку
+        status=status.name.upper(),  # Преобразуем статус в строку
         contract_id=contract_id,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
