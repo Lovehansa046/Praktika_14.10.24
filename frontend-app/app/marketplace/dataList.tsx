@@ -1,8 +1,8 @@
-"use client";
-import {useState} from 'react';
-import data from './data.json';
+import {useState, useEffect} from 'react';
+import axios from 'axios';
 
 export default function DataList() {
+    const [items, setItems] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [showForm, setShowForm] = useState(false);
     const [newProduct, setNewProduct] = useState({
@@ -10,30 +10,65 @@ export default function DataList() {
         name: "",
         price: "",
         count: "",
+        grade: "",
         sellerName: "",
-        totalPrice: "",
+        description: "",
+        image_url: "",
+        transaction_type: "",
+        user_id: "",
+        active: "true"
     });
 
-    const handleProductChange = (e) => {
+    // Получаем данные из базы данных при монтировании компонента
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/items/');
+                setItems(response.data);  // Заполняем данные
+            } catch (error) {
+                console.error("Ошибка при получении данных:", error);
+            }
+        };
+
+        fetchItems();
+    }, []);  // Пустой массив зависимостей означает, что запрос будет выполнен только один раз при монтировании
+
+    const handleProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setNewProduct((prev) => ({...prev, [name]: value}));
+        setNewProduct(prev => ({...prev, [name]: value}));
     };
 
-    const addProduct = () => {
-        console.log("Product added:", newProduct);
-        setNewProduct({
-            sku: "",
-            name: "",
-            price: "",
-            count: "",
-            sellerName: "",
-            totalPrice: "",
-            quantity: ""
-        });
-        setShowForm(false); // Hide form after submission
+    const addProduct = async () => {
+        try {
+            // Добавляем новый продукт
+            const response = await axios.post('http://localhost:8000/create/items/', newProduct);
+            console.log('Product added:', response.data);
+
+            // Обновляем список товаров после добавления нового
+            const updatedItems = await axios.get('http://localhost:8000/items/');
+            setItems(updatedItems.data);
+
+            // Очищаем форму и скрываем её
+            setNewProduct({
+                sku: "",
+                name: "",
+                price: "",
+                count: "",
+                grade: "",
+                sellerName: "",
+                description: "",
+                image_url: "",
+                transaction_type: "",
+                user_id: "",
+                active: "true"
+            });
+            setShowForm(false); // Скрыть форму после добавления
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
     };
 
-    const filteredData = data.filter(item =>
+    const filteredData = items.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.sellerName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,7 +77,6 @@ export default function DataList() {
     return (
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 mt-6">
             <div className="items-start justify-between md:flex">
-
                 <div className="max-w-lg">
                     <h3 className="text-gray-800 text-xl font-bold sm:text-2xl">
                         Team members
@@ -60,6 +94,7 @@ export default function DataList() {
                     </button>
                 </div>
             </div>
+
             <div className="mt-8">
                 <input
                     type="text"
@@ -69,6 +104,7 @@ export default function DataList() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500"
                 />
             </div>
+
             <div className="mt-8 shadow-sm border rounded-lg overflow-x-auto">
                 <table className="w-full table-auto text-sm text-left">
                     <thead className="bg-gray-50 text-gray-600 font-medium border-b">
@@ -89,7 +125,7 @@ export default function DataList() {
                             <td className="px-6 py-4 whitespace-nowrap">{item.price}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item.count}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item.sellerName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item.totalPrice}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{(item.count * item.price).toFixed(2)}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -107,46 +143,81 @@ export default function DataList() {
 
                     {/* Modal Form */}
                     <div className="fixed inset-0 flex items-center justify-center z-50">
-                        <div className="relative p-6 max-w-md w-full bg-white rounded shadow-lg">
+                        <div
+                            className="fixed inset-0 bg-black bg-opacity-50"
+                            onClick={() => setShowForm(false)}
+                        ></div>
+
+                        {/* Контейнер модального окна */}
+                        <div className="relative p-8 max-w-md w-full bg-white rounded shadow-lg">
                             <button
                                 onClick={() => setShowForm(false)}
-                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                                aria-label="Close modal"
+                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke="currentColor" className="w-6 h-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                          d="M6 18L18 6M6 6l12 12"/>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    className="w-6 h-6"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
                                 </svg>
                             </button>
 
-                            <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    addProduct();
-                                }}
-                                className="space-y-4"
-                            >
-                                {["sku", "name", "price", "count", "sellerName", "totalPrice"].map((field, idx) => (
-                                    <div key={idx}>
-                                        <label className="block text-sm font-medium capitalize">{field}</label>
-                                        <input
-                                            type={field === "price" || field === "count" ? "number" : "text"}
-                                            name={field}
-                                            value={newProduct[field]}
-                                            onChange={handleProductChange}
-                                            className="w-full px-3 py-2 border rounded"
-                                            required
-                                        />
-                                    </div>
-                                ))}
-                                <button
-                                    type="submit"
-                                    className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                            <h2 className="text-xl font-bold mb-4 px-6">Add New Product</h2>
+
+                            <div className="max-h-[60vh] overflow-y-auto px-6 pb-6">
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        addProduct();
+                                    }}
+                                    className="space-y-6"
                                 >
-                                    Add Product
-                                </button>
-                            </form>
+                                    {[
+                                        {name: "sku", type: "text", placeholder: "Введите SKU"},
+                                        {name: "name", type: "text", placeholder: "Введите название"},
+                                        {name: "price", type: "number", placeholder: "Введите цену"},
+                                        {name: "count", type: "number", placeholder: "Количество на складе"},
+                                        {name: "grade", type: "text", placeholder: "Уровень качества"},
+                                        {name: "sellerName", type: "text", placeholder: "Имя продавца"},
+                                        // {name: "totalPrice", type: "number", placeholder: "Общая цена"},
+                                        {name: "description", type: "text", placeholder: "Описание продукта"},
+                                        {name: "image_url", type: "url", placeholder: "URL изображения"},
+                                        {name: "transaction_type", type: "text", placeholder: "Тип транзакции"},
+                                        {name: "user_id", type: "text", placeholder: "ID пользователя"},
+                                    ].map((field, idx) => (
+                                        <div key={idx}>
+                                            <label className="block text-sm font-medium capitalize">
+                                                {field.name.replace(/_/g, " ")}
+                                            </label>
+                                            <input
+                                                type={field.type}
+                                                name={field.name}
+                                                value={newProduct[field.name] || ""}
+                                                onChange={handleProductChange}
+                                                placeholder={field.placeholder}
+                                                className="w-full px-3 py-2 border rounded"
+                                                autoFocus={idx === 0}
+                                            />
+                                        </div>
+                                    ))}
+
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                    >
+                                        Add Product
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </>

@@ -30,4 +30,4 @@ def create_tables_if_not_exist():
             print(f"Таблица {table.__tablename__} уже существует, пропускаем.")
 
 
-
+create_tables_if_not_exist()

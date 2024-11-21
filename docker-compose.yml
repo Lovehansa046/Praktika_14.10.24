@@ -3,16 +3,20 @@ services:
   backend:
     build:
       context: .
-      dockerfile: /backend-app/Dockerfile-backend
+      dockerfile: ./backend-app/Dockerfile-backend
     ports:
       - "8000:8000"
     volumes:
       - ./backend-app:/database_connect
     environment:
-      DATABASE_URL: postgresql://postgres:Plotar1404@db:5432/circular
+      DATABASE_URL: postgresql://postgres:Plotar1404@db:5432/circular_base
       MINIO_URL: "http://minio:9000"
     networks:
       - app-network
+
+
+    depends_on:
+      - db
 
   minio:
     image: minio/minio
@@ -31,7 +35,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: /frontend-app/Dockerfile-frontend
+      dockerfile: ./frontend-app/Dockerfile-frontend
     ports:
       - "3000:3000"
     volumes:
@@ -40,13 +44,16 @@ services:
       - NEXT_PUBLIC_API_URL=http://backend:8000
     networks:
       - app-network
+    depends_on:
+      - db
+      - backend
 
   db:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Plotar1404
-      POSTGRES_DB: circular
+      POSTGRES_DB: circular_base
     ports:
       - "5432:5432"
     volumes:

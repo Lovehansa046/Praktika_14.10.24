@@ -210,16 +210,22 @@ export default function Navbar() {
 
                         </ul>
                     </div>
-                    <button
-                        onClick={handleSearchToggle}
-                        className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 " viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round"
-                                  d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
-                        </svg>
-                    </button>
+                    <div
+                        className={` pb-3 mt-8 md:block md:pb-0 md:mt-0 ${state ? 'block' : 'hidden'}`}>
+                        <button
+                            onClick={handleSearchToggle}
+                            className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 " viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round"
+                                      d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"/>
+                            </svg>
+                        </button>
+
+                    </div>
+
                     {isSearchOpen && (
                         <div
                             className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-40 backdrop-blur-sm">
@@ -230,7 +236,8 @@ export default function Navbar() {
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 24 24"
                                          fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                 </button>
                                 <input
@@ -258,7 +265,8 @@ export default function Navbar() {
                                                     <div>
                                                         <p><strong>Company:</strong> {item.company_name}</p>
                                                         <p><strong>Contact:</strong> {item.contact_person}</p>
-                                                        <p><a href={item.download_document} className="text-indigo-600">Download
+                                                        <p><a href={item.download_document}
+                                                              className="text-indigo-600">Download
                                                             Document</a></p>
                                                     </div>
                                                 )}

@@ -4,10 +4,12 @@ from enum import Enum
 from decimal import Decimal
 from datetime import datetime
 
+
 # Определяем Enum для типа транзакции
 class TransactionType(str, Enum):
     sale = 'sale'
     purchase = 'purchase'
+
 
 # Базовая схема для модели Item
 class ItemBase(BaseModel):
@@ -19,16 +21,20 @@ class ItemBase(BaseModel):
     count: int
     image_url: Optional[str] = None
     price: Decimal
+    sellerName: str
     transaction_type: TransactionType
+
 
 # Схема для создания записи Item
 class ItemCreate(ItemBase):
     user_id: int
 
+
 # Схема для обновления записи Item
 class ItemUpdate(ItemBase):
     name: Optional[str] = None
     count: Optional[int] = None
+
 
 # Схема для отображения записи Item (например, в ответах API)
 class ItemResponse(ItemBase):
@@ -49,6 +55,7 @@ class UserCreate(BaseModel):
     verified: Optional[bool] = False
     active: Optional[bool] = True
 
+
 class ContractCreate(BaseModel):
     item_id: int
     buyer_user_id: int
@@ -56,14 +63,19 @@ class ContractCreate(BaseModel):
     signed: bool = False
     total_value: Decimal
 
+
 class PaymentStatus(str, Enum):
     PENDING = "pending"
-    COMPLETED = "completed"
-    FAILED = "failed"
+    PAID = "paid"
+    OVERDUE = "overdue"
+
 
 class PaymentCreate(BaseModel):
-    received: bool
-    status: List[PaymentStatus]
+    received: bool = True
+    legal_name: str
+    payment_name: str
+    payment_amount: Decimal
+    status: PaymentStatus  # Одиночное значение вместо списка
     contract_id: int
 
 
@@ -74,6 +86,8 @@ class UserBase(BaseModel):
 
     class Config:
         from_attributes = True
+
+
 class ContractView(BaseModel):
     id: int
     item: ItemBase
@@ -86,3 +100,10 @@ class ContractView(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PaymentView(BaseModel):
+    legal_name: str
+    payment_name: str
+    payment_amount: Decimal
+    status: PaymentStatus

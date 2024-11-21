@@ -4,12 +4,27 @@ from fastapi import FastAPI, Depends, HTTPException, Form
 from database_connect.database import init_db, get_db  # Убедитесь, что get_db и init_db импортируются правильно
 from database_connect.models import Item, User, Contract, Payment
 from database_connect.schemas import ItemCreate, UserCreate, ContractCreate, PaymentCreate, \
-    ContractView, PaymentStatus  # Схема ItemBase
+    ContractView, PaymentStatus, PaymentView  # Схема ItemBase
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешает запросы с любого домена
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешает все HTTP-методы
+    allow_headers=["*"],  # Разрешает все заголовки
+)
+
+
+@app.get("/items/")
+def get_items(db: Session = Depends(get_db)):
+    items = db.query(Item).all()
+    return items
 
 
 @app.post("/create/items/", response_model=ItemCreate)
@@ -27,6 +42,7 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
         active=item.active,
         sku=item.sku,
         count=item.count,
+        sellerName=item.sellerName,
         image_url=item.image_url,
         price=item.price,
         transaction_type=item.transaction_type,
@@ -53,31 +69,6 @@ def get_contracts(db: Session = Depends(get_db)):
     if not contracts:
         raise HTTPException(status_code=404, detail="No contracts found")
     return contracts
-
-
-@app.post("/create/payments/", response_model=PaymentCreate)
-def create_payment(contract_id: int = Form(...),  # Используем Form для contract_id
-                   received: float = Form(...),  # Используем Form для received
-                   status: PaymentStatus = Form(...), db: Session = Depends(get_db)):
-    # Проверяем, существует ли контракт с указанным contract_id
-    db_contract = db.query(Contract).filter(Contract.id == contract_id).first()
-    if not db_contract:
-        raise HTTPException(status_code=404, detail="Contract not found")
-
-    # Создаем объект Payment для сохранения в базе данных
-    db_payment = Payment(
-        received=received,
-        status=status.name.upper(),  # Преобразуем статус в строку
-        contract_id=contract_id,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
-    )
-
-    # Добавляем запись в базу данных
-    db.add(db_payment)
-    db.commit()
-    db.refresh(db_payment)
-    return db_payment
 
 
 @app.post("/create/contracts/", response_model=ContractCreate)
@@ -113,6 +104,45 @@ def create_contract(contract: ContractCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_contract)
     return db_contract
+
+
+@app.post("/create/payments/", response_model=PaymentCreate)
+def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
+    # Проверяем, существует ли контракт с указанным contract_id
+    db_contract = db.query(Contract).filter(Contract.id == payment.contract_id).first()
+    if not db_contract:
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    # Преобразуем статус в строку, если он передан как список
+    status_value = payment.status if isinstance(payment.status, str) else payment.status[0]
+
+    # received_value = payment.received if payment.received is not None else True
+
+    # Создаем объект Payment для сохранения в базе данных
+    db_payment = Payment(
+        payment_name=payment.payment_name,
+        # received=received_value,
+        status=status_value,  # Преобразованный статус
+        contract_id=payment.contract_id,
+        legal_name=payment.legal_name,
+        payment_amount=payment.payment_amount,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+
+    # Добавляем запись в базу данных
+    db.add(db_payment)
+    db.commit()
+    db.refresh(db_payment)
+    return db_payment
+
+
+@app.get("/payments/", response_model=List[PaymentView])
+def get_payments(db: Session = Depends(get_db)):
+    contracts = db.query(Payment).all()
+    if not contracts:
+        raise HTTPException(status_code=404, detail="No payments found")
+    return contracts
 
 
 @app.post("/create/user")
