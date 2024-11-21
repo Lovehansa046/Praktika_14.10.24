@@ -11,8 +11,8 @@ Base = declarative_base()
 # Определяем ENUM для статуса платежа
 class PaymentStatus(enum.Enum):
     pending = 'pending'
-    completed = 'completed'
-    failed = 'failed'
+    paid = 'paid'
+    overdue = 'overdue'
 
 
 # Определяем ENUM для типа транзакции
@@ -78,6 +78,9 @@ class Contract(Base):
     item_id = Column(Integer, ForeignKey('items.id'))
     buyer_user_id = Column(Integer, ForeignKey('users.id'))
     seller_user_id = Column(Integer, ForeignKey('users.id'))
+    download_document = Column(String)
+    company_name = Column(String)
+    contact_person = Column(String)
     signed = Column(Boolean)
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
     updated_at = Column(TIMESTAMP, default=datetime.utcnow,

@@ -62,12 +62,15 @@ class ContractCreate(BaseModel):
     seller_user_id: int
     signed: bool = False
     total_value: Decimal
+    download_document: str
+    company_name: str
+    contact_person: str
 
 
 class PaymentStatus(str, Enum):
-    PENDING = "pending"
-    PAID = "paid"
-    OVERDUE = "overdue"
+    pending = "pending"
+    paid = "paid"
+    overdue = "overdue"
 
 
 class PaymentCreate(BaseModel):
