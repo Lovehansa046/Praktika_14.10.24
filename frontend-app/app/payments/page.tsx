@@ -22,7 +22,7 @@ export default function Payments() {
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/payments/");
+                const response = await axios.get("http://localhost:8000/payments");
                 setPayments(response.data);
             } catch (error) {
                 console.error("Error fetching payments:", error);
@@ -38,16 +38,7 @@ export default function Payments() {
 
     const addPayment = async () => {
         try {
-            const paymentData = {
-                payment_name: newPayment.payment_name,
-                contract_id: newPayment.contract_id,
-                payment_amount: parseFloat(newPayment.payment_amount), // Преобразуем в число
-                status: newPayment.status,
-                legal_name: newPayment.legal_name,
-                received: newPayment.received,
-            };
-
-            const response = await axios.post("http://localhost:8000/create/payments/", paymentData, {
+            const response = await axios.post("http://localhost:8000/create/payments/", newPayment, {
                 headers: {"Content-Type": "application/json"},
             });
 

@@ -97,12 +97,16 @@ class ContractView(BaseModel):
     buyer: UserBase
     seller: UserBase
     signed: bool
+    company_name: str
+    contact_person: str
     created_at: datetime
     updated_at: datetime
     total_value: Decimal
 
-    class Config:
-        from_attributes = True
+
+
+class Config:
+    from_attributes = True
 
 
 class PaymentView(BaseModel):

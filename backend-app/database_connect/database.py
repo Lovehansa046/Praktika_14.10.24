@@ -11,7 +11,7 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP
 Base = declarative_base()
 
 def get_engine():
-    DATABASE_URL = "postgresql://postgres:Plotar1404@db:5432/circular_base"
+    DATABASE_URL = "postgresql://postgres:Plotar1404@db:5432/circular_lite"
     engine = create_engine(DATABASE_URL, echo=True)
     return engine
 

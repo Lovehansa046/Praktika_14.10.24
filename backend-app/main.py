@@ -140,7 +140,7 @@ def create_payment(payment: PaymentCreate, db: Session = Depends(get_db)):
     return db_payment
 
 
-@app.get("/payments/", response_model=List[PaymentView])
+@app.get("/payments", response_model=List[PaymentView])
 def get_payments(db: Session = Depends(get_db)):
     contracts = db.query(Payment).all()
     if not contracts:
